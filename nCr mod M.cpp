@@ -1,8 +1,8 @@
 /*///////////////////////////////////////////////////
-C(n, r, M) calculates nCr mod M.. M is not necessaril prime! 
-Basic Idea: 
+C(n, r, M) calculates nCr mod M.. M is not necessarily prime! 
+Idea: 
 Factorize mod into p_0 ^ q_0 * p_1 ^ q_1 ..... 
-Then calculate nCr \equiv a_i (mod p_0 ^ q_0) by lucas modified! 
+Then calculate nCr \equiv a_i (mod p_i ^ q_i) by lucas modified! 
 Then do CRT to calculate nCd mod(M)
 ////////////////////////////////////////////////////*/
 
