@@ -46,6 +46,7 @@ int centroid(int u, int par, int sz) {
 			return centroid(v, u, sz);
 	return u;
 }
+
 void decompose(int u, int par) {
 	dfs(u, -1); 
 	int c = centroid(u, -1, sub[u]/2);
