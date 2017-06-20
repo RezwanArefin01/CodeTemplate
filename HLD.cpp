@@ -6,6 +6,7 @@ chainNo[u] = number of chain where u belongs to
 otherend[i] = lower node of i-th edge; needed for edge query
 base[] = base array for segment tree 
 pos[u] = position of parent[u] - u edge's cost in base array
+        in node update, p[u] = u's value in base array 
 //////////////////////////////////////////*/
 
 const int maxn = 10100;
@@ -114,7 +115,8 @@ int queryup(int u, int v) {
         uch = chainNo[u];
         if(uch == vch) {
             if(u == v) break; 
-            ret = max(ret, query(1, 0, ptr-1, pos[v]+1, pos[u]));
+            ret = max(ret, query(1, 0, ptr-1, pos[v]+1, pos[u])); // in nodes on path qurery 
+                                                                // query(pos[v], pos[u])
             break;
         } ret = max(ret, query(1, 0, ptr-1, pos[chainHead[uch]], pos[u]));
         u = chainHead[uch];
