@@ -14,7 +14,7 @@ struct CHT{
 	vector<ll> m, b;
 	int ptr = 0; 
 	bool bad(int l1, int l2, int l3) {
-		return (b[l3] - b[l1]) * (m[l1] - m[l2])  <= (b[l2] - b[l1]) * (m[l1] - m[l3]);
+		return 1.0 * (b[l3] - b[l1]) * (m[l1] - m[l2])  <= 1.0 * (b[l2] - b[l1]) * (m[l1] - m[l3]);
 	} 
 
 	void add(ll _m, ll _b) { 
