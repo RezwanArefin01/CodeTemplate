@@ -3,7 +3,7 @@ Requirements:
 If we want to keep lower envelop then- 
     m[i] > m[i+1], i.e. m[] should be decreasing
 In upper envelop case m[] should be increasing
-The b[] don't need any ordering.
+The b[] doesn't need any ordering.
 
 For query if we want +O(n) complexity then always 
  	x[i] <= x[i+1], i.e. increasing. 

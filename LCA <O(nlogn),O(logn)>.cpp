@@ -14,7 +14,7 @@ void dfs(int u, int par) {
 			p[u][i] = p[p[u][i-1]][i-1];
 	for(int v : adj[u]) if(par-v) dfs(v,u);
 }
-int get(int u, int v) {
+int lca(int u, int v) {
 	if(L[u] < L[v]) swap(u,v);
 	for(int i=lg; i>=0; i--) 
 		if(p[u][i] + 1 && L[p[u][i]] >= L[v])
