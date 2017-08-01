@@ -1,4 +1,12 @@
-
+int tree[maxn<<2], lazy[maxn<<2];
+void build(int node, int l, int r) {
+	if(l == r) {
+		tree[node] = arr[l]; return;
+	} int mid = l + r >> 1;
+	build(node<<1, l, mid);
+	build(node<<1|1, mid+1, r);
+	tree[node] = tree[node<<1] + tree[node<<1|1]; 
+}
 void upd(int node, int l, int r, ll v) {
 	lazy[node] += v;
 	tree[node] += (r-l+1)*v;
