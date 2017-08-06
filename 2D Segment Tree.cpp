@@ -2,7 +2,7 @@
 2D Segment Tree 
 Needs O(16nm) memory!!! 
 Be carefull writing lx, rx, ly, ry! 
-//////////////////////////////*/
+//////////////////////////////*/ 
 
 const int maxn = 2001;
 int tree[4*maxn][4*maxn], n, m, arr[maxn][maxn];

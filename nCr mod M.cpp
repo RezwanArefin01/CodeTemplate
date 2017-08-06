@@ -83,7 +83,7 @@ ll C(ll n, ll r, int mod) {
 	vector<ii> ppf = factorize(mod);
 	vector<ll> a, m;
 	for(ii p : ppf) {
-		ll pp = Pow(p.first, p.second,1e7);
+		ll pp = Pow(p.first, p.second, 1e7);
 		ll aa = C_mod_p_q(n, r, p.first, p.second);
 		a.push_back(aa);
 		m.push_back(pp);

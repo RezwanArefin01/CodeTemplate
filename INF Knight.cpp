@@ -49,7 +49,7 @@ void precalc() {
     }
 }
 
-// Returns knight distance betwee (0,0) -> (x,y) 
+// Returns knight distance between (0,0) -> (x,y) 
 i64 knight(i64 x, i64 y) {
     i64 step, res = 0;
     if(x < y) swap(x, y);

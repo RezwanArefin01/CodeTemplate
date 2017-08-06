@@ -1,6 +1,6 @@
 //BinaryLifting 
 //LCA Routine 
-//Dont 
+//Dont forget to memset p[][] array with -1
 const int maxn = 1e5+10;
 const int MAXLOG = log2(maxn)+5;
 vector<int> adj[maxn];
