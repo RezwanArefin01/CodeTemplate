@@ -28,7 +28,7 @@ ll solve(int l, int r) {
         
     sort(t.begin(), t.end()); 
     for(int i = 0; i < t.size(); i++) {
-        for(int j = i+1; j < t.size() && j <= i + 6; j++) 
+        for(int j = i+1; j < t.size() && j <= i + 15; j++) 
             d = min(d, dist(t[i], t[j])); 
     } return d;
 }
