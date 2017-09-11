@@ -1,14 +1,16 @@
 /*------Non-Dynamic Convex Hull Trick--------*\ 
 Requirements: 
-If we want to keep lower envelop then- 
-    m[i] > m[i+1], i.e. m[] should be decreasing
-In upper envelop case m[] should be increasing
-The b[] doesn't need any ordering.
+If m[i] > m[i+1]: 
+	The lines will form lower-hull. 
+	If we want minimums then bad(s-3, s-2, s-1)
+	If we want maximums then bad(s-1, s-2, s-3)
 
-For query if we want +O(n) complexity then always 
- 	x[i] <= x[i+1], i.e. increasing. 
-If not then we may need to replace vector with deque (TODO)
-If query isn't even monotonic then we can just do Binary Search. Then O(lg n) per query. 
+If m[i] < m[i+1]: 	
+	The lines will form upper-hull.
+	If we want maximums then bad(s-3, s-2, s-1)
+	If we want minimums then bad(s-1, s-2, s-3)
+	
+If x isn't increasing then do Binary Search (Ternary Search actually)
 /*-------------------------------------------*/
 struct CHT{
 	vector<ll> m, b;
