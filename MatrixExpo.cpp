@@ -1,33 +1,33 @@
-struct Matrix {
-    vector< vector<int> > mat;
-    int n_rows, n_cols;
 
-    Matrix(vector< vector<int> > values): mat(values), n_rows(values.size()),
-        n_cols(values[0].size()) {}
-
-    static Matrix identity_matrix(int n) {
-        vector< vector<int> > values(n, vector<int>(n, 0));
-        for(int i = 0; i < n; i++)
-            values[i][i] = 1;
-        return values;
+const int mod = 1e9 + 7;
+struct Mat{
+    int a[10][10], d;
+    Mat(int _d = 0) { 
+        d = _d; 
+        memset(a, 0, sizeof a);
     }
-    Matrix operator*(const Matrix &other) const {
-        int n = n_rows, m = other.n_cols;
-        vector< vector<int> > result(n_rows, vector<int>(n_cols, 0));
-        for(int i = 0; i < n; i++)
-            for(int j = 0; j < m; j++) 
-                for(int k = 0; k < n_cols; k++) 
-                    result[i][j] = (result[i][j] + mat[i][k] * 1ll * other.mat[k][j]) % mod;
-        return Matrix(result);
+    void setIdentity() {
+        for(int i = 0; i < d; i++) 
+            for(int j = 0; j < d; j++) 
+                a[i][j] = (i == j);
+    }
+    Mat operator *(const Mat &p) const {
+        Mat ret(d); int i, j, k;
+        ll y = (ll)mod * mod, x;  
+        for(i = 0; i < d; i++) {
+            for(j = 0; j < d; j++) {
+                for(k = x = 0; k < d; k++) {
+                    x += (ll)a[i][k] * p.a[k][j];
+                    if(x >= y) x -= y;
+                } ret.a[i][j] = x % mod;
+            }
+        } return ret;
+    }
+    Mat pow(ll n) {
+        Mat ret = Mat(d); ret.setIdentity();
+        Mat b = *this; 
+        for(; n; n >>= 1, b = b * b) 
+            if(n & 1) ret = ret * b;
+        return ret; 
     }
 };
-
-Matrix fast_exponentiation(Matrix m, int power) {
-    Matrix result = Matrix::identity_matrix(m.n_rows);
-    while(power) {
-        if(power & 1)
-            result = result * m;
-        m = m * m;
-        power >>= 1;
-    } return result;
-}
