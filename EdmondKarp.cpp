@@ -13,11 +13,10 @@ struct Edmonds { // O(VE^2)
     }
     
     void addEdge(int u, int v, int w) {
-        E.push_back({u, v, w, 0});
-        E.push_back({v, u, 0, 0});
-        int sz = E.size(); 
-        adj[u].push_back(sz - 2);
-        adj[v].push_back(sz - 1);
+        E.push_back({u, v, w});
+        adj[u].push_back(E.size() - 1);
+        E.push_back({v, u, 0});
+        adj[v].push_back(E.size() - 1);
     }
     int get(int s, int t) {
         int flow = 0;
