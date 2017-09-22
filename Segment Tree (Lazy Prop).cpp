@@ -1,4 +1,4 @@
-
+ 
 int tree[maxn<<2], lazy[maxn<<2];
 void build(int node, int l, int r) {
 	if(l == r) {

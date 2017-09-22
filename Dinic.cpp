@@ -1,8 +1,8 @@
 struct Edge {
     int u, v;
-    LL cap, flow;
+    ll cap, flow;
     Edge() {}
-    Edge(int u, int v, LL cap): u(u), v(v), cap(cap), flow(0) {}
+    Edge(int u, int v, ll cap): u(u), v(v), cap(cap), flow(0) {}
 };
 
 struct Dinic {
@@ -13,7 +13,7 @@ struct Dinic {
   
     Dinic(int N): N(N), E(0), g(N), d(N), pt(N) {}
 
-    void AddEdge(int u, int v, LL cap) {
+    void AddEdge(int u, int v, ll cap) {
         if (u != v) {
             E.emplace_back(Edge(u, v, cap));
             g[u].emplace_back(E.size() - 1);
@@ -39,15 +39,15 @@ struct Dinic {
         } return d[T] != N + 1;
     }
 
-    LL DFS(int u, int T, LL flow = -1) {
+    ll DFS(int u, int T, ll flow = -1) {
         if (u == T || flow == 0) return flow;
         for (int &i = pt[u]; i < g[u].size(); ++i) {
             Edge &e = E[g[u][i]];
             Edge &oe = E[g[u][i]^1];
             if (d[e.v] == d[e.u] + 1) {
-                LL amt = e.cap - e.flow;
+                ll amt = e.cap - e.flow;
                 if (flow != -1 && amt > flow) amt = flow;
-                if (LL pushed = DFS(e.v, T, amt)) {
+                if (ll pushed = DFS(e.v, T, amt)) {
                     e.flow += pushed;
                     oe.flow -= pushed;
                     return pushed;
@@ -56,11 +56,11 @@ struct Dinic {
         } return 0;
     }
 
-    LL MaxFlow(int S, int T) {
-        LL total = 0;
+    ll MaxFlow(int S, int T) {
+        ll total = 0;
         while (BFS(S, T)) {
             fill(pt.begin(), pt.end(), 0);
-            while (LL flow = DFS(S, T))
+            while (ll flow = DFS(S, T))
                 total += flow;
         } return total;
     }
