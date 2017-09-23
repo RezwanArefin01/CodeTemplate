@@ -26,10 +26,11 @@ void push(pnode t) {
 	if(t -> r) t -> r -> lazy += t -> lazy; 
 	t -> lazy = 0;
 }
-void combine(pnode t) {
+void combine(pnode t) { // Note: This function should reset datas of t first (MUST!!) 
+						// 		 Then update datas from l and r.
 	if(!t) return; 
 	push(t -> l); push(t -> r);
-	t -> sum = t -> val;
+	t -> sum = t -> val; // Reset
 	if(t -> l) t -> sum += t -> l -> sum;
 	if(t -> r) t -> sum += t -> r -> sum;
 }
