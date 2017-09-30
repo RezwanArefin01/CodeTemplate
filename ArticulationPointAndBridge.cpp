@@ -11,11 +11,14 @@ void dfs(int u, int par) {
 			low[u] = min(low[u], low[v]); 
 			if(par + 1 && low[v] >= vis[u]) 
 				cut[u] = 1;
+			if(low[v] > vis[u]) {
+				printf("Bridge %d -- %d\n", u, v);
+			}
 		}
 	} if(par == -1 && ch > 1) cut[u] = 1;
 }
 
-void ArticulationPoint() {
+void ArticulationPointAndBridge() {
 	memset(vis, 0, sizeof vis);
 	memset(low, 0, sizeof low); 
 	memset(cut, 0, sizeof cut); 
