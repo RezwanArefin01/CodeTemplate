@@ -1,19 +1,17 @@
-typedef long long ll; 
-
+ 
 struct maxxor {
-	ll best[64], msb;
+	int best[32], msb;
 	maxxor() { memset(best, -1, sizeof best); }
-	void add(ll x) {
+	void add(int x) { 
 		while(x > 0) {
-			msb = 63 - __builtin_clzll(x); 
+			msb = 31 - __builtin_clz(x); // clzll for ll
 			if(best[msb] == -1) {
 				best[msb] = x; break;
-			} else x ^= best[msb]; 
+			} else x = x ^ best[msb]; 
 		}
 	}
-	ll get() {
-		ll ret = 0;
-		for(int i = 63; i >= 0; i--) {
+	int get(int ret = 0) {
+		for(int i = 31; i >= 0; i--) {
 			if(best[i] != -1) 
 				ret = max(ret, ret ^ best[i]);
 		} return ret;

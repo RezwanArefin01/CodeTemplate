@@ -1,68 +1,47 @@
-struct Edge {
-    int u, v;
-    ll cap, flow;
-    Edge() {}
-    Edge(int u, int v, ll cap): u(u), v(v), cap(cap), flow(0) {}
-};
-
 struct Dinic {
-    int N;
-    vector<Edge> E;
-    vector<vector<int>> g;
-    vector<int> d, pt;
-  
-    Dinic(int N): N(N), E(0), g(N), d(N), pt(N) {}
-
-    void AddEdge(int u, int v, ll cap) {
-        if (u != v) {
-            E.emplace_back(Edge(u, v, cap));
-            g[u].emplace_back(E.size() - 1);
-            E.emplace_back(Edge(v, u, 0));
-            g[v].emplace_back(E.size() - 1);
+  static const int MXN = 10000;
+  struct Edge { int v,f,re; };
+  int n, s, t, level[MXN];
+  vector<Edge> E[MXN];
+  void init(int _n, int _s, int _t){
+    n = _n; s = _s; t = _t;
+    for (int i = 0; i < n; i++) E[i].clear();
+  }
+  void add_edge(int u, int v, int f){
+    E[u].PB({v, f, SZ(E[v])});
+    E[v].PB({u, 0, SZ(E[u])-1});
+  }
+  bool BFS(){
+    for (int i = 0; i < n; i++) level[i] = -1;
+    queue<int> que({s});
+    level[s] = 0;
+    while (!que.empty()){
+      int u = que.front(); que.pop();
+      for (auto it : E[u]){
+        if (it.f > 0 && level[it.v] == -1){
+          level[it.v] = level[u]+1;
+          que.push(it.v);
         }
+      }
+    } return level[t] != -1;
+  }
+  int DFS(int u, int nf){
+    if (u == t) return nf;
+    int res = 0;
+    for (auto &it : E[u]){
+      if (it.f > 0 && level[it.v] == level[u]+1){
+        int tf = DFS(it.v, min(nf,it.f));
+        res += tf; nf -= tf; it.f -= tf;
+        E[it.v][it.re].f += tf;
+        if (nf == 0) return res;
+      }
     }
-
-    bool BFS(int S, int T) {
-        queue<int> q({S});
-        fill(d.begin(), d.end(), N + 1);
-        d[S] = 0;
-        while(!q.empty()) {
-            int u = q.front(); q.pop();
-            if (u == T) break;
-            for (int k: g[u]) {
-                Edge &e = E[k];
-                if (e.flow < e.cap && d[e.v] > d[e.u] + 1) {
-                    d[e.v] = d[e.u] + 1;
-                    q.emplace(e.v);
-                }
-            }
-        } return d[T] != N + 1;
-    }
-
-    ll DFS(int u, int T, ll flow = -1) {
-        if (u == T || flow == 0) return flow;
-        for (int &i = pt[u]; i < g[u].size(); ++i) {
-            Edge &e = E[g[u][i]];
-            Edge &oe = E[g[u][i]^1];
-            if (d[e.v] == d[e.u] + 1) {
-                ll amt = e.cap - e.flow;
-                if (flow != -1 && amt > flow) amt = flow;
-                if (ll pushed = DFS(e.v, T, amt)) {
-                    e.flow += pushed;
-                    oe.flow -= pushed;
-                    return pushed;
-                }
-            }
-        } return 0;
-    }
-
-    ll MaxFlow(int S, int T) {
-        ll total = 0;
-        while (BFS(S, T)) {
-            fill(pt.begin(), pt.end(), 0);
-            while (ll flow = DFS(S, T))
-                total += flow;
-        } return total;
-    }
-};
- 
+    if (!res) level[u] = -1;
+    return res;
+  }
+  int flow(int res = 0){
+    while ( BFS() )
+      res += DFS(s,2147483647);
+    return res;
+  }
+} flow;

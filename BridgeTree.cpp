@@ -12,7 +12,7 @@ Be careful about multiple edges.
 const int maxn = 2e5 + 10;
 vector<int> adj[maxn], tree[maxn]; 
 
-int vis[maxn], low[maxn], tym = 1, c = 0;
+int vis[maxn], low[maxn], tym = 1;
 int comp[maxn], bicon[maxn];
 
 void calc(int u, int par, int c) {
