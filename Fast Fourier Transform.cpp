@@ -1,51 +1,52 @@
-typedef long double ld;
-typedef complex<ld> Complex;
-typedef valarray<Complex> ValComplex; 
+typedef long double ld; 
+ld PI = acosl(-1);
+typedef long long ll;
+typedef pair<int, int> ii; 
 
-const ld PI = 2 * acos(0.0); 
-
-void fft(ValComplex &p, bool inverse = 0) {
-	int n = p.size(); 
-	if(n <= 1) return;
-	
-	ValComplex f = p[slice(0, n/2, 2)], 
-			   g = p[slice(1, n/2, 2)];
-	
-	fft(f, inverse); fft(g, inverse); 
-	
-	Complex omega_n = exp(Complex(0, 2 * PI / n)), w = 1;
-	if(inverse) omega_n = Complex(1, 0) / omega_n; 
-
-	for(int k = 0; k < n / 2; k++) {
-		Complex add = w * g[k];
-		p[k]       = f[k] + add;
-		p[k + n/2] = f[k] - add;
-		w *= omega_n;
+struct cplx {
+	ld a, b;
+	cplx(ld a = 0, ld b = 0) : a(a), b(b) {}
+	const cplx operator + (const cplx &c) const 
+		{ return cplx(a + c.a, b + c.b); }
+	const cplx operator - (const cplx &c) const
+		{ return cplx(a - c.a, b - c.b); }
+	const cplx operator * (const cplx &c) const
+		{ return cplx(a * c.a - b * c.b, a * c.b + b * c.a); }
+};
+typedef vector<cplx> vc; 
+void fft(vc &p, bool inv = 0) { 
+	int n = p.size(), i = 0; 
+	for(int j = 1; j < n - 1; ++j) {
+		for(int k = n >> 1; k > (i ^= k); k >>= 1);
+		if(j < i) swap(p[i], p[j]);
 	}
+	for(int m = 2; m <= n; m <<= 1) {
+		int mh = m >> 1;
+		cplx wn = cplx(cos(2 * PI / m), sin(2 * PI / m));
+		if(inv) wn = cplx(cos(2 * PI / m), -sin(2 * PI / m));
+		for(int j = 0; j < n; j += m) {
+			cplx w(1, 0); 
+			for(int k = 0; k < mh; ++k) {
+				int pos = j + k; 
+				cplx t = w * p[pos + mh]; 
+				p[pos + mh] = p[pos] - t; 
+				p[pos] = p[pos] + t;
+				w = w * wn;
+			}
+		} 
+	} if(inv) for(int i = 0; i < n; i++) p[i].a /= n, p[i].b /= n;
 }
-
-void ifft(ValComplex& x) {
-    fft(x, 1);
-    x /= x.size();
-}
-
-vector<int> multiply(vector<int> &a, vector<int> &b) {
-	int n = a.size(), m = b.size(), t = n + m - 1, sz = 1;
+vector<ll> multiply(vector<int> &a, vector<int> &b) {
+	int n = a.size(), m = b.size(), t = n + m - 1, sz = 1; 
 	while(sz < t) sz <<= 1;
-
-	ValComplex x(sz), y(sz), z(sz);
-	for(int i = 0; i < n; i++) x[i] = Complex(a[i], 0);
-	for(int i = n; i < sz; i++) x[i] = Complex(0, 0);
-
-	for(int i = 0; i < m; i++) y[i] = Complex(b[i], 0);
-	for(int i = m; i < sz; i++) y[i] = Complex(0, 0);
-
-	fft(x); fft(y);
-	for(int i = 0; i < sz; i++) z[i] = x[i] * y[i]; 
-
-	ifft(z); 
-	vector<int> res(sz); 
-	for(int i = 0; i < sz; i++) res[i] = z[i].real() + 0.5;
-	while(res.size() > 1 && res.back() == 0) res.pop_back(); 
-	return res; 
+	vc x(sz), y(sz), z(sz); 
+	for(int i = 0 ; i < sz; ++i) {
+		x[i] = i < a.size() ? cplx(a[i], 0) : cplx(0, 0); 
+		y[i] = i < b.size() ? cplx(b[i], 0) : cplx(0, 0); 
+	} fft(x), fft(y);
+	for(int i = 0; i < sz; ++i) z[i] = x[i] * y[i];
+	fft(z, 1);
+	vector<ll> ret(t + 1);
+	for(int i = 0; i <= t; ++i) ret[i] = z[i].a + 0.5;
+	return ret;
 }
