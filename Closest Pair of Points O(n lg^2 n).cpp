@@ -9,7 +9,6 @@ struct point {
 };
 ll dist(point &p, point &q) { return sq(p.x - q.x) + sq(p.y - q.y); }
 vector<point> p;
-int cnt = 0;
 ll solve(int l, int r) {
     if(r - l <= 3) {
         ll ret = 1e18;
