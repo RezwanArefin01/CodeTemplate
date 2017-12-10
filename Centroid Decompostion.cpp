@@ -1,58 +1,49 @@
+// Sample implementation of Centroid Decomposition.
+// This solves the problem "count number of k length paths in tree"
+// TODO: Do book-keeping in solve() instead of unordered_map
+
 const int maxn = 1e5 + 10;
-set<int> adj[maxn];
-int p[maxn][32], lg, L[maxn];
-//LCA Routine
-//Don't Forget to memset p array ;) 
-void lcadfs(int u, int par) {
-	p[u][0] = par; 
-	if(par + 1) 
-		L[u] = L[par] + 1;
-	for(int i=1; i<lg; i++)
-		if(p[u][i-1] + 1) 
-			p[u][i] = p[p[u][i-1]][i-1];
-	for(int v : adj[u]) if(par-v) lcadfs(v,u);
-}
-int lca(int u, int v) {
-	if(L[u] < L[v]) swap(u,v);
-	for(int i=lg; i>=0; i--) 
-		if(p[u][i] + 1 && L[p[u][i]] >= L[v])
-			u = p[u][i];
-	if(v == u) return u;
-	for(int i=lg; i>=0; i--) 
-		if(p[u][i] - p[v][i])
-			v = p[v][i], u = p[u][i];
-	return p[v][0];
+int n, k; 
+vector<int> adj[maxn]; 
+int vis[maxn], sub[maxn]; 
+
+void calc(int u, int par) { sub[u] = 1;  
+	for(int v : adj[u]) if(!vis[v] && v - par) 
+		calc(v, u), sub[u] += sub[v];
 }
 
-int dist(int u, int v) {
-	return L[u] + L[v] - 2*L[lca(u,v)];
-}
-
-//centroid Decomposition
-int parent[maxn], sub[maxn];  //parent[u] = parent of u in Centroid Tree
-void addEdge(int u, int v) {
-	adj[u].insert(v);
-	adj[v].insert(u);
-}
-void dfs(int u, int par) {
-	sub[u] = 1;
-	for(int v : adj[u]) if(par-v) {
-		dfs(v,u); sub[u] += sub[v];
-	}
-}
-int centroid(int u, int par, int sz) {
-	for(int v : adj[u]) if(par-v) 
-		if(sub[v] > sz) 
-			return centroid(v, u, sz);
+int centroid(int u, int par, int r) {
+	for(int v : adj[u]) if(!vis[v] && v - par)
+		if(sub[v] > r) return centroid(v, u, r);
 	return u;
 }
 
-void decompose(int u, int par) {
-	dfs(u, -1); 
-	int c = centroid(u, -1, sub[u]/2);
-	parent[c] = par; 
-	for(int v : adj[c]) {
-		adj[v].erase(c);
-		decompose(v, c);
-	} adj[c].clear();
+int dist[maxn]; ll ans;
+int in[maxn], out[maxn], vert[maxn], tym = 0;
+
+void dfs(int u, int par = -1, int d = 0) {
+	dist[u] = d; 
+	in[u] = tym; 
+	vert[tym++] = u;
+	for(int v : adj[u]) if(v - par && !vis[v]) 
+		dfs(v, u, d + 1);
+	out[u] = tym - 1;
+}
+void solve(int u) {
+	tym = 0; dfs(u);
+	unordered_map<int, int> cnt; cnt[0] = 1;
+	for(int v : adj[u]) if(!vis[v]) {
+		for(int t = in[v]; t <= out[v]; ++t) 
+			if(dist[vert[t]] <= k)
+				ans += cnt[k - dist[vert[t]]]; 
+		for(int t = in[v]; t <= out[v]; ++t)
+			++cnt[dist[vert[t]]];
+	}
+}
+
+void decomp(int u, int par = -1) {
+	calc(u, par);
+	int c = centroid(u, par, sub[u] / 2); 
+	solve(c); vis[c] = 1; 
+	for(int v : adj[c]) if(!vis[v]) decomp(v, c);
 }
