@@ -1,4 +1,4 @@
-const int maxn = 3e5+10;
+const int maxn = 3e5 + 10;
 struct node {
     node *ch[2];
     node() { ch[0] = ch[1] = NULL; }
@@ -14,7 +14,7 @@ node *trie[maxn];
 
 void insert(int v, int p, int val) {
     node *curr = trie[v] = trie[p] -> clone();
-    for(int i=31; i>=0; i--) {
+    for(int i = 31; i >= 0; i--) {
         int bit = (val >> i) & 1;
         node* &ch = curr -> ch[bit];
         curr = ch = ch -> clone();
@@ -22,11 +22,10 @@ void insert(int v, int p, int val) {
 }
 int queryMin(node *curr, int val) {
     int ans = 0;
-    for(int i=31; i>=0; i--) {
-        int bit = (val >> i)&1; 
-        if(curr -> ch[bit]) {
-            curr = curr -> ch[bit];
-        } else {
+    for(int i = 31; i >= 0; i--) {
+        int bit = (val >> i) & 1; 
+        if(curr -> ch[bit]) curr = curr -> ch[bit];
+        else {
             curr = curr -> ch[bit^1];
             ans |= (1 << i);
         }
@@ -34,11 +33,11 @@ int queryMin(node *curr, int val) {
 }
 int queryMax(node *curr, int val) {
     int ans = 0;
-    for(int i=31; i>=0; i--) {
-        int bit = (val >> i)&1; 
-        if(curr -> ch[bit^1]) {
-            ans |= (1<<i);
-            curr = curr -> ch[bit^1];
+    for(int i = 31; i >= 0; i--) {
+        int bit = (val >> i) & 1; 
+        if(curr -> ch[bit ^ 1]) {
+            ans |= (1 << i);
+            curr = curr -> ch[bit ^ 1];
         } else curr = curr -> ch[bit];
     } return ans;
 }  
@@ -50,10 +49,9 @@ void print(node *curr, stack<int> &st) {
             v.push_back(st.top());
             st.pop();
         } st = tmp;
-        for(int i=v.size()-1; i>=0; i--) 
-            cout<<v[i]; 
-        cout<<endl;
-        return;
+        for(int i = v.size() - 1; i >= 0; i--) 
+            cout << v[i]; 
+        cout << endl; return;
     } 
     if(curr -> ch[0]) {
         st.push(0);

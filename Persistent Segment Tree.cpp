@@ -6,59 +6,44 @@ To update in a single version x write
 root[x] = update(root[x], ... );
 /*////////////////////////////////////////
 
-const int maxn = 1e5 + 10;
+const int maxn = 1e5+10; 
+struct node {
+	int l, r, sum; 
+} t[maxn * 20]; 
+int root[maxn], a[maxn], n, m, k, idx, M;
 
-int t[maxn * 20], L[maxn * 20], R[maxn * 20], idx = 0, root[maxn]; 
-int n, m, arr[maxn]; 
-
-void build(int id, int l, int r) {
+void update(int &nd, int l, int r, int &i) {
+	t[++idx] = t[nd]; 
+	++t[nd = idx].sum; //  += v; 
 	if(l == r) return; 
-	L[id] = idx++;
-	R[id] = idx++; 
-	int mid = l + r >> 1; 
-	build(L[id], l, mid);
-	build(R[id], mid+1, r); 
+	int m = l + r >> 1;
+	if(i <= m) update(t[nd].l, l, m, i); 
+	else update(t[nd].r, m + 1, r, i);
 }
-int update(int id, int l, int r, int i, int v) {
-	if(r < i || l > i) return id; 
-	int ID = idx++; 
-	if(l == r) {
-		t[ID] = t[id] + v; 
-		return ID;
-	} int mid = l + r >> 1; 
-	L[ID] = update(L[id], l, mid, i, v);
-	R[ID] = update(R[id], mid+1, r, i, v); 
 
-	t[ID] = t[L[ID]] + t[R[ID]];
-	return ID;  
-}
-int query(int id, int l, int r, int i, int j) {
+int query(int nd, int l, int r, int &i, int &j) {
 	if(r < i || l > j) return 0;
-	if(i <= l && r <= j) return t[id];
-	int mid = l + r >> 1;
-	return query(L[id], l, mid, i, j) + query(R[id], mid+1, r, i, j); 
+	if(i <= l && r <= j) return t[nd].sum;
+	int m = l + r >> 1;
+	return query(t[nd].l, l, m, i, j) + query(t[nd].r, m + 1, r, i, j);
 }
-
-int lessCount(int l, int r, int k) {
-	return query(root[r], 1, n, 1, k-1) - query(root[l-1], 1, n, 1, k-1); 
+// a = root[r], b = root[l - 1]
+int lesscnt(int a, int b, int l, int r, int k) { 
+	if(r <= k) return t[a].sum - t[b].sum; 
+	int m = l + r >> 1;
+	if(k <= m) return lesscnt(t[a].l, t[b].l, l, m, k);
+	else return lesscnt(t[a].l, t[b].l, l, m, k) + 
+				lesscnt(t[a].r, t[b].r, m + 1, r, k);
 }
-
-int search(int a, int b, int l, int r, int k) {
-	if(l == r) return l; 
-	int cnt = t[L[a]] - t[L[b]];
-	int mid = l + r >> 1;
-	if(cnt >= k) 
-		return search(L[a], L[b], l, mid, k);
-	return search(R[a], R[b], mid+1, r, k - cnt);
+int kthnum(int a, int b, int l, int r, int k) {
+	if(l == r) return l;
+	int cnt = t[t[a].l].sum - t[t[b].l].sum; 
+	int m = l + r >> 1;
+	if(cnt >= k) return kthnum(t[a].l, t[b].l, l, m, k); 
+	else return kthnum(t[a].r, t[b].r, m + 1, r, k - cnt); 
 }
-int kthnum(int l, int r, int k) {
-	return search(root[r], root[l-1], 1, n, k);
+void init(int v = 1) {
+	t[0].l = t[0].r = t[0].sum = 0;
+	for(int i = 1; i <= n; ++i) 
+		update(root[i] = root[i - 1], 0, M, a[i]);
 }
-void init() {
-	root[0] = idx++; 
-	build(root[0], 1, n); 
-	for(int i = 1; i <= n; i++) {
-		root[i] = update(root[i-1], 1, n, arr[i], +1);
-	}
-} 
-

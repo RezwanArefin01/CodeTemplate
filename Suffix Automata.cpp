@@ -18,8 +18,7 @@ void extend(int c) {
 	if(p == -1) return void(link[cur] = 0);
 
 	int q = adj[p][c]; 
-	if(len[q] == len[p] + 1) 
-		return void(link[cur] = q);
+	if(len[q] == len[p] + 1) return void(link[cur] = q);
 
 	int clone = sz++;
 	len[clone] = len[p] + 1; 

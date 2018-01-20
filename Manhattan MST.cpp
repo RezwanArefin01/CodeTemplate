@@ -2,8 +2,8 @@ struct point {
     int x, y, index;
     bool operator<(const point &p) const  
         { return x == p.x ? y < p.y : x < p.x; }
-} p[maxN];
-struct node { int value, p; } T[maxN];
+} p[maxn];
+struct node { int value, p; } T[maxn];
 
 int query(int x) {
     int r = maxint, p = -1;
@@ -12,7 +12,7 @@ int query(int x) {
     return p;
 }
 void update(int x, int w, int p) {
-  for (; x > 0; x -= (x & -x)) if (T[x].value > w) T[x].value = w, T[x].p = p;
+    for(; x > 0; x -= (x & -x)) if (T[x].value > w) T[x].value = w, T[x].p = p;
 }
 void addEdge(int u, int v, int c) { /* -_- */ } 
 int kruskal() { /* -_- */ }
@@ -24,7 +24,7 @@ int manhattan() {
         } else if(dir == 3) {
             for(int i = 1; i <= n; ++i) p[i].x = -p[i].x;
         } sort(p + 1, p + 1 + n);
-        vector<int> v; static int a[maxN];
+        vector<int> v; static int a[maxn];
         for(int i = 1; i <= n; ++i) a[i] = p[i].y - p[i].x, v.push_back(a[i]);
         sort(v.begin(), v.end()); 
         v.erase(unique(v.begin(), v.end()), v.end());
