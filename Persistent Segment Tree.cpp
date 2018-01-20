@@ -1,9 +1,9 @@
 /*////////////////////////////////////////
 Persistent Segment Tree 
-To make version y from version x write 
-root[y] = update(root[x], ... );
-To update in a single version x write 
-root[x] = update(root[x], ... );
+To update in a version first copy the root, 
+then make update in the version. Something like this - 
+root[x] = root[y];
+update(root[x], ...)
 /*////////////////////////////////////////
 
 const int maxn = 1e5+10; 
