@@ -37,7 +37,7 @@ int centroid(int u, int par, int r) {
 void decompose(int u, int f) {
 	calc(u, f);
 	int c = centroid(u, -1, sub[u] >> 1);
-	vis[c] = 1;	par[c] = f;
+	vis[c] = 1; par[c] = f;
 	for(int v : adj[c]) if(!vis[v]) decompose(v, c);
 }
 
