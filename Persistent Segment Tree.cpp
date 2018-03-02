@@ -2,8 +2,8 @@
 Persistent Segment Tree 
 To update in a version first copy the root, 
 then make update in the version. Something like this - 
-root[x] = root[y];
-update(root[x], ...)
+root[y] = root[x];
+update(root[y], ...)
 /*////////////////////////////////////////
 
 const int maxn = 1e5+10; 

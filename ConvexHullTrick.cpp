@@ -1,22 +1,22 @@
 /*------Non-Dynamic Convex Hull Trick--------*\ 
 Requirements: 
 If m[i] > m[i+1]: 
-	The lines will form lower-hull. 
+	The lines will form lower-envelope. 
 	If we want minimums then bad(s-3, s-2, s-1)
-	If we want maximums then bad(s-1, s-2, s-3)
+	If we want maximums then bad(s-1, s-2, s-3) // actually they will form reverse-upper-hull
 
 If m[i] < m[i+1]: 	
-	The lines will form upper-hull.
+	The lines will form upper-envelope.
 	If we want maximums then bad(s-3, s-2, s-1)
-	If we want minimums then bad(s-1, s-2, s-3)
+	If we want minimums then bad(s-1, s-2, s-3) // actually they will form reverse-lower-hull
 	
 If x isn't increasing then do Binary Search (Ternary Search actually)
 /*-------------------------------------------*/
 struct CHT{
 	vector<ll> m, b;
 	int ptr = 0; 
-	bool bad(int l1, int l2, int l3) {
-		return 1.0 * (b[l3] - b[l1]) * (m[l1] - m[l2])  <= 1.0 * (b[l2] - b[l1]) * (m[l1] - m[l3]);
+	bool bad(int l1, int l2, int l3) { // returns intersect(l1, l3) <= intersect(l1, l2)
+		return 1.0 * (b[l3] - b[l1]) * (m[l1] - m[l2]) <= 1.0 * (b[l2] - b[l1]) * (m[l1] - m[l3]);
 	} 
 
 	void add(ll _m, ll _b) { 
