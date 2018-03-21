@@ -1,16 +1,14 @@
 /*------Non-Dynamic Convex Hull Trick--------*\ 
 Requirements: 
-If m[i] > m[i+1]: 
-	The lines will form lower-envelope. 
-	If we want minimums then bad(s-3, s-2, s-1)
-	If we want maximums then bad(s-1, s-2, s-3) // actually they will form reverse-upper-hull
+If m[] is decreasing: 
+	If we want minimums then bad(s-3, s-2, s-1), x[] increasing
+	If we want maximums then bad(s-1, s-2, s-3), x[] decreasing 
 
-If m[i] < m[i+1]: 	
-	The lines will form upper-envelope.
-	If we want maximums then bad(s-3, s-2, s-1)
-	If we want minimums then bad(s-1, s-2, s-3) // actually they will form reverse-lower-hull
+If m[] is increasing: 	
+	If we want maximums then bad(s-3, s-2, s-1), x[] increasing 
+	If we want minimums then bad(s-1, s-2, s-3), x[] decreasing 
 	
-If x isn't increasing then do Binary Search (Ternary Search actually)
+If x isn't monotonic, then do Ternary Search or keep intersections and do binary search
 /*-------------------------------------------*/
 struct CHT{
 	vector<ll> m, b;

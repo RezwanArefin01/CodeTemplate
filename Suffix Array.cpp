@@ -11,17 +11,17 @@ bool cmp_sa(int a, int b) {
 
 void build_sa() {
 	n = s.size();
-	for(int i = 0; i<n; i++)
+	for(int i = 0; i < n; i++)
 		sa[i] = i, pos[i] = s[i];
 	for(gap = 1; ; gap <<= 1) {
 		sort(sa, sa + n, cmp_sa);
-		for(int i = 1; i<n; i++) tmp[i] = tmp[i-1] + cmp_sa(sa[i-1], sa[i]);
-		for(int i = 0; i<n; i++) pos[sa[i]] = tmp[i];
+		for(int i = 1; i < n; i++) tmp[i] = tmp[i-1] + cmp_sa(sa[i-1], sa[i]);
+		for(int i = 0; i < n; i++) pos[sa[i]] = tmp[i];
 		if(tmp[n-1] == n-1) break;
 	}
 }
 void build_lcp() {
-	for(int i = 0, k = 0; i<n; i++) if(pos[i] - n + 1) {
+	for(int i = 0, k = 0; i < n; i++) if(pos[i] - n + 1) {
 		for(int j = sa[pos[i] + 1]; s[j + k] == s[i + k]; k++);
 		lcp[pos[i]] = k;
 		if(k) k--;

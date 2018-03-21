@@ -3,15 +3,13 @@
 // TODO: Do book-keeping in solve() instead of unordered_map
 
 const int maxn = 1e5 + 10;
-int n, k; 
+int n, k, vis[maxn], sub[maxn];
 vector<int> adj[maxn]; 
-int vis[maxn], sub[maxn]; 
 
 void calc(int u, int par) { sub[u] = 1;  
 	for(int v : adj[u]) if(!vis[v] && v - par) 
 		calc(v, u), sub[u] += sub[v];
 }
-
 int centroid(int u, int par, int r) {
 	for(int v : adj[u]) if(!vis[v] && v - par)
 		if(sub[v] > r) return centroid(v, u, r);
@@ -40,7 +38,6 @@ void solve(int u) {
 			++cnt[dist[vert[t]]];
 	}
 }
-
 void decomp(int u, int par = -1) {
 	calc(u, par);
 	int c = centroid(u, par, sub[u] / 2); 

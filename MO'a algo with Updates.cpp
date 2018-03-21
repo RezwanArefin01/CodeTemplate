@@ -1,10 +1,3 @@
-inline void read(int &res) {
-    char c;
-    while (c = getchar(), c <= ' ');
-    res = c - '0';
-    while (c = getchar(), c >= '0' && c <= '9')
-        res = res * 10 + (c - '0');
-}
 
 const int maxn = 1e5 + 10;
 int n, m, a[maxn], prv[maxn], ans[maxn], block;
