@@ -3,18 +3,19 @@
 // add lines with -m and -b and return -ans to 
 // make this code working for minimums. 
 
-const double inf = 1e18;
+typedef long double ld;
+const ld inf = 1e18;
 
 struct chtDynamic {  
 	struct line {
-		ll m, b; double x; 
+		ll m, b; ld x; 
 		ll val; bool isQuery; 
 		line(ll _m = 0, ll _b = 0) : 
 			m(_m), b(_b), val(0), x(-inf), isQuery(false) {} 
 		
 		ll eval(ll x) const { return m * x + b;	}
 		bool parallel(const line &l) const { return m == l.m; }
-		double intersect(const line &l) const {
+		ld intersect(const line &l) const {
 			return parallel(l) ? inf : 1.0 * (l.b - b) / (m - l.m);
 		}
 		bool operator < (const line &l) const {
@@ -38,7 +39,7 @@ struct chtDynamic {
 
 	iter update(iter it) {
 		if(!cPrev(it)) return it; 
-		double x = it -> intersect(*prev(it));
+		ld x = it -> intersect(*prev(it));
 		line tmp(*it); tmp.x = x;
 		it = hull.erase(it); 
 		return hull.insert(it, tmp);
