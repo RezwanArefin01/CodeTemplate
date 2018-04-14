@@ -20,7 +20,7 @@ inline void read(int &res) {
 #endif
     res = c - '0';
     while (c = getchar(), c >= '0' && c <= '9')
-        res = res * 10 + (c - '0');a
+        res = res * 10 + (c - '0');
 #ifdef USE_SIGN
     if(sign) res = -res;
 #endif

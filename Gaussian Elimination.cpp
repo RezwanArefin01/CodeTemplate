@@ -3,12 +3,9 @@
  * returns rank of matrix
  * a[][] is changed to reduced row echelon form
  * no solution if a row is like [0, 0, ..., | some non-zero number]
- * 
 ***********************/
-
 typedef long double ld;
 const ld eps = 1e-8;
-
 int gauss(vector<vector<ld> > &a) {
 	int n = a.size(), m = a[0].size(), r = 0; 
 	for(int c = 0; c < m && r < n; c++) {

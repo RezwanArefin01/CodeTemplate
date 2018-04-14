@@ -5,8 +5,7 @@
  * Take precautions while calculating sz. 
 ***********************************/
 
-#pragma comment(linker, "/stack:200000000")
-#pragma GCC optimize("Ofast")
+#pragma GCC optimize("Ofast,unroll-loops,no-stack-protector")
 #pragma GCC target("sse,sse2,sse3,ssse3,sse4,popcnt,abm,mmx,avx,tune=native")
 
 typedef long double ld; 
@@ -40,18 +39,17 @@ void calcw() {
 		}
 	} 
 } 
-void calcrev(int n) { int i = 0;
-	for(int j = 1; j < n - 1; ++j) {
-		for(int k = n >> 1; k > (i ^= k); k >>= 1);
-		rev[j] = i; 
-	} 
+void calcrev(int n) {
+	int sz = 31 - __builtin_clz(n); 
+	for(int i = 1; i < n - 1; ++i) 
+		rev[i] = (rev[i >> 1] >> 1) | ((i & 1) << sz - 1); 
 }
 void fft(base *p, int n, int dir) {
-	for(int i = 1; i < n - 1; i++) 
+	for(int i = 1; i < n - 1; ++i) 
 		if(i < rev[i]) swap(p[i], p[rev[i]]);
 	int lg = 31 - __builtin_clz(n); 
 	for(int i = 1; i <= lg; ++i) { int l = 1 << i; 
-		for(int j = 0 ; j < n; j += l) {
+		for(int j = 0; j < n; j += l) {
 			base t, *wn = w[dir][i]; 
 			base *u = p + j, *v = u + (l >> 1), *e = v; 
 			while(u != e) {
