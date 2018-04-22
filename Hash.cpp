@@ -1,43 +1,31 @@
-struct Hash{
-	ll h[5010][2], pow[5010][2], n, 
-	   b[2] = {(ll)1e9+9, (ll)1e9+7}, 
-	   mod[2] = {(ll)1e9+7, (ll)1e9+9}; 
-
-	Hash(){}
-	void init(string &str) {
-		n = str.size() - 1; 	
-		pow[0][0] = pow[0][1] = 1; 
-		h[0][0] = h[0][1] = 0;
-
-		for(int i = 1; i <= n; i++) {
-			for(int j = 0; j < 2; j++) {
-				pow[i][j] = pow[i-1][j] * b[j] % mod[j]; 
-				h[i][j] = (h[i-1][j] * b[j] + str[i] - 'a' + 1) % mod[j];
-			} 
-		}	
-	}
-
-	pair<ll, ll> hash(int l, int r) {
-		ll ret[2]; 
-		for(int i = 0; i < 2; i++) {
-			ret[i] = (h[r][i] - (h[l-1][i]*pow[r-l+1][i] % mod[i]) + mod[i]) % mod[i]; 
+struct Hash {
+	struct base {
+		string s; int b, mod; 
+		vector<int> hash, p; 
+		void init(string &_s, int _b, int _mod) { // b > 26, prime. 
+			s = _s; b = _b, mod = _mod;
+			hash.resize(s.size());
+			p.resize(s.size()); 
+			hash[0] = s[0] - 'A' + 1; p[0] = 1;
+			for(int i = 1; i < s.size(); ++i) {
+				hash[i] = (ll) hash[i - 1] * b % mod; 
+				hash[i] += s[i] - 'A' + 1;  
+				if(hash[i] >= mod) hash[i] -= mod;
+				p[i] = (ll) p[i - 1] * b % mod;
+			} cout << endl;
 		}
-		return pair<ll,ll>(ret[0], ret[1]);
+		int get(int l, int r) {
+			int ret = hash[r]; 
+			if(l) ret -= (ll) hash[l - 1] * p[r - l + 1] % mod;
+			if(ret < 0) ret += mod;
+			return ret;
+		}
+	} h[2];
+	void init(string &s) {
+		h[0].init(s, 29, 1e9+7); 
+		h[1].init(s, 31, 1e9+9); 
 	}
-};
-Hash h, rh; 
-
-inline void init(string str) {
-	h.init(str); 
-	reverse(str.begin(), str.end());
-	str.pop_back(); 
-	str = "#" + str;
-	rh.init(str);
-}
-inline bool ispal(int l, int r) {
-	int n = h.n;
-	auto x = h.hash(l, r); 
-	auto y = rh.hash(n-r+1, n-l+1);
-	return x == y;
-}
- 
+	pair<int, int> get(int l, int r) {
+		return { h[0].get(l, r), h[1].get(l, r) }; 
+	}
+} H;
