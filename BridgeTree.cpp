@@ -50,7 +50,7 @@ int main(int argc, char const *argv[]) {
 	for(int i = 1; i <= n; i++) if(!bicon[i]) {
 		root.push_back(c); 
 		shrink(i, c++);
-	} tym = 1;
+	} 
 	for(int r : root) build(r, 0);
 	// Do stuff. 
 }
