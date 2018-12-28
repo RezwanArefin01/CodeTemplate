@@ -19,6 +19,7 @@ void polyinv(int *a, int *b, int n) {
 	ntt(b, n, 1);
 	fill(b + (n >> 1), b + n, 0);
 }
+
 int inv2 = Pow(2, mod - 2); 
 void polysqrt(int *a, int *b, int n) {
 	if(n == 1) return void(b[0] = 1); // b[0] = x: x^2 \equiv a[0] 
@@ -36,4 +37,51 @@ void polysqrt(int *a, int *b, int n) {
 	for(int i = 0; i < n; ++i) 
 		b[i] = (ll) inv2 * (ta[i] + b[i]) % mod;
 	fill(b + (n >> 1), b + n, 0);
+}
+
+
+// Raising factorials. 
+// (x+1)(x+2)...(x+N)
+
+int f[M], h[M], a[M], b[M]; 
+int fact[M], inv[M];
+
+void build(int n) {
+    if(n == 1) return void(f[0] = f[1] = 1); 
+	if(n & 1) {
+		build(n - 1); 
+        for(int i = n; i >= 1; i--) {
+            f[i] = f[i - 1] + (ll) n * f[i] % mod; 
+            if(f[i] >= mod) f[i] -= mod; 
+        } f[0] = (ll) f[0] * n % mod; 
+        return; 
+	} 
+    n >>= 1; build(n); 
+	int t = n + n + 1, sz = 1; 
+	while(sz < t) sz <<= 1; 
+	prepare(sz); 
+
+	for(int i = 0; i <= n; i++) 
+		a[i] = (ll) f[n - i] * fact[n - i] % mod; 
+	for(int i = 0, p = 1; i <= n; i++) {
+		b[i] = (ll) p * inv[i] % mod; 
+		p = (ll) p * n % mod; 
+	}
+    for(int i = n + 1; i < sz; i++) a[i] = b[i] = 0; 
+
+	ntt(a, sz); ntt(b, sz); 
+	for(int i = 0; i < sz; i++) 
+		h[i] = (ll) a[i] * b[i] % mod;
+	ntt(h, sz, 1); 
+	reverse(h, h + n + 1); 
+
+	for(int i = 0; i <= n; i++) 
+		h[i] = (ll) h[i] * inv[i] % mod;
+	for(int i = n + 1; i < sz; i++) 
+		f[i] = h[i] = 0; 
+
+	ntt(h, sz); ntt(f, sz); 
+	for(int i = 0; i < sz; i++) 
+		f[i] = (ll) f[i] * h[i] % mod; 
+	ntt(f, sz, 1);
 }
