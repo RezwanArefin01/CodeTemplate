@@ -1,4 +1,4 @@
-const int N = 1e6 + 10;
+soconst int N = 1e6 + 10;
 int trie[N][26], link[N], idx, tot[N]; 
 char p[N], s[N]; 
 
@@ -19,7 +19,7 @@ void bfs() {
 			else {
 				link[v] = u ? trie[link[u]][c] : 0; 
 				tot[v] += tot[link[v]];
-				q.push(v); 
+				q.push(v);  
 			}
 		}
 	}

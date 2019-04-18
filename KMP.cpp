@@ -11,6 +11,7 @@ void prefixFn() {
 		else pi[i] = now = -1; 
 	}
 }
+
 int kmp() {
 	prefixFn(); 
 	int cnt = 0, now = -1;

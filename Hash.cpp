@@ -12,7 +12,7 @@ struct Hash {
 				hash[i] += s[i] - 'A' + 1;  
 				if(hash[i] >= mod) hash[i] -= mod;
 				p[i] = (ll) p[i - 1] * b % mod;
-			} cout << endl;
+			} 
 		}
 		int get(int l, int r) {
 			int ret = hash[r]; 
