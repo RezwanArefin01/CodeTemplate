@@ -19,35 +19,92 @@ struct base {
 		{ return base(a - c.a, b - c.b); }
 	const base operator * (const base &c) const
 		{ return base(a * c.a - b * c.b, a * c.b + b * c.a); }
+	const base conj() const { return base(a, -b); }
 }; 
 
-const int N = 1 << 20; 
-base w_pre[N|1], w[N|1]; int rev[N];
+vector<int> rev; 
+vector<base> w; 
 
-void calcw() { 	
-	for(int i = 0; i <= N; ++i) 
-		w_pre[i] = base(cos(2*PI/N*i), sin(2*PI/N*i));
-}    
-void calcrev(int n) {
-	int sz = 31 - __builtin_clz(n); sz = abs(sz);
-	for(int i = 1; i < n - 1; ++i) 
-		rev[i] = (rev[i >> 1] >> 1) | ((i & 1) << sz - 1); 
+void prepare(int n) { // n is power of 2
+	int sz = __builtin_ctz(n); 
+	if(rev.size() != n) {
+		rev.assign(n, 0); 
+		for(int i = 0; i < n; ++i) {
+			rev[i] = (rev[i >> 1] >> 1) | ((i & 1) << (sz - 1)); 
+		}
+	}
+
+	if(w.size() >= n) return; 
+	if(w.empty()) w = {{0, 0}, {1, 0}}; 
+	
+	sz = __builtin_ctz(w.size()); 
+	w.resize(n);
+
+	// w[n + i] = w_{2n}^i, n power of 2, i < n
+	while((1 << sz) < n) {
+		double b = 2 * PI / (1 << (sz + 1)), ang = b; 
+		for(int i = 0; i < 1 << (sz - 1); ++i, ang += 2 * b) {
+			int j = (1 << (sz - 1)) + i; 
+			w[2 * j] = w[j]; 
+			w[2 * j + 1] = base(cos(ang), sin(ang)); 
+		} ++sz; 
+	}
 }
-void fft(base *p, int n, int dir) {
-	for(int i = 1; i < n - 1; i++) 
+
+void fft(base *p, int n) {
+	prepare(n); 
+	for(int i = 1; i < n - 1; ++i) 
 		if(i < rev[i]) swap(p[i], p[rev[i]]);
-	for(int h = 1; h < n; h <<= 1) { int l = h << 1; 
-		if(!dir) for(int j = 0; j < h; ++j) w[j] = w_pre[N/l*j]; 
-		else for(int j = 0; j < h; ++j) w[j] = w_pre[N-N/l*j];
-		for(int j = 0 ; j < n; j += l) {
-			base t, *wn = w; 
-			base *u = p + j, *v = u + h, *e = v; 
-			while(u != e) {
-				t = *v * *wn;
-				*v = *u - t; 
-				*u = *u + t;
-				++u, ++v, ++wn;
+	for(int h = 1; h < n; h <<= 1) {
+		for(int s = 0; s < n; s += h << 1) {
+			for(int i = 0; i < h; ++i) {
+				base &u = p[s + i], &v = p[s + h + i], 
+					t = v * w[h + i];
+				v = u - t; u = u + t;
 			}
 		}
-	} if(dir) for(int i = 0; i < n; ++i) p[i].a /= n, p[i].b /= n;
-} 
+	} 
+}
+
+base f[N]; 
+void mul(int *a, int *b, int *c, int n, int m) {
+	int sz = n + m - 1; 
+	while(sz & (sz - 1)) sz = (sz | (sz - 1)) + 1;
+	for(int i = 0; i < sz; ++i) 
+		f[i] = base(i < n ? a[i] : 0, i < m ? b[i] : 0);
+	fft(f, sz); 
+	for(int i = 0; i <= (sz >> 1); ++i) {
+		int j = (sz - i) & (sz - 1); 
+		base x = (f[i] * f[i] - (f[j] * f[j]).conj()) * base(0, -0.25); 
+		f[j] = x; f[i] = x.conj(); 
+	}
+	fft(f, sz); 
+	for(int i = 0; i < sz; ++i) c[i] = f[i].a / sz + 0.5; 
+}
+
+base f[N], g[N]; 
+void mul_mod(int *a, int *b, int *c, int n, int m) {
+	int sz = 1;
+	while(sz < n + m - 1) sz <<= 1;
+	for(int i = 0; i < n; i++) f[i] = base(a[i] & 32767, a[i] >> 15);
+	for(int i = 0; i < m; i++) g[i] = base(b[i] & 32767, b[i] >> 15);
+	for(int i = n; i < sz; i++) f[i] = base(0, 0); 
+	for(int i = m; i < sz; i++) g[i] = base(0, 0); 
+	calcrev(sz); 
+
+	fft(f, sz);	fft(g, sz);
+	for(int i = 0; i < sz; i++) {
+		int j = (sz - i) & (sz - 1);
+		base a1 = (f[i] + f[j].conj()) * base(0.5, 0);
+		base a0 = (f[i] - f[j].conj()) * base(0, -0.5);
+		base b1 = (g[i] + g[j].conj()) * base(0.5 / sz, 0);
+		base b0 = (g[i] - g[j].conj()) * base(0, -0.5 / sz);
+		u[j] = a1 * b1 + a0 * b0 * base(0, 1);
+		v[j] = a1 * b0 + a0 * b1;
+	}
+	fft(u, sz); fft(v, sz);
+	for(int i = 0; i < sz; i++) {
+		ll aa = ll(u[i].a + 0.5) % mod, bb = ll(v[i].a + 0.5) % mod, cc = ll(u[i].b + 0.5) % mod; 
+		c[i] = ((aa + (bb << 15) % mod) % mod + (cc << 30) % mod) % mod;
+	}
+}
