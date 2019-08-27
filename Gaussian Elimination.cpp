@@ -19,7 +19,7 @@ int gauss(vector<vector<ld> > &a) {
 		for(int i = c; i < m; i++) a[r][i] /= t;
 		for(int i = 0; i < n; i++) if(i != r) {
 			ld t = a[i][c];
-			for(int j = c; i < m; i++)  
+			for(int j = c; j < m; j++)  
 				a[i][j] -= a[r][j] * t;
 		}
 		r++;

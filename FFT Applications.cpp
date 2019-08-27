@@ -85,3 +85,24 @@ void build(int n) {
 		f[i] = (ll) f[i] * h[i] % mod; 
 	ntt(f, sz, 1);
 }
+
+
+
+
+void polyinv(int *a, int *b, int n) {
+    static int c[N], d[N];
+    b[0] = Pow(a[0], mod - 2); 
+    int sz = 1;
+
+    while(sz < n) {
+        mul_mod(a, b, d, 2 * sz, 2 * sz); 
+        for(int i = sz; i < 2 * sz; ++i) 
+            d[i - sz] = d[i], d[i] = 0;
+        mul_mod(b, d, c, 2 * sz, 2 * sz); 
+        for(int i = sz; i < 2 * sz; ++i) {
+            b[i] -= c[i - sz];
+            if(b[i] < 0) b[i] += mod; 
+        }
+        sz <<= 1; 
+    }
+}

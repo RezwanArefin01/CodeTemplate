@@ -60,8 +60,9 @@ void fft(base *p, int n) {
     } 
 }
 
-base f[N]; 
 void mul(int *a, int *b, int *c, int n, int m) {
+    static base f[N]; 
+    
     int sz = n + m - 1; 
     while(sz & (sz - 1)) sz = (sz | (sz - 1)) + 1;
     for(int i = 0; i < sz; ++i) 
@@ -76,15 +77,16 @@ void mul(int *a, int *b, int *c, int n, int m) {
     for(int i = 0; i < sz; ++i) c[i] = f[i].a / sz + 0.5; 
 }
 
-base f[N], g[N]; 
 void mul_mod(int *a, int *b, int *c, int n, int m) {
+    static base f[N], g[N], u[N], v[N];
+
     int sz = 1;
     while(sz < n + m - 1) sz <<= 1;
     for(int i = 0; i < n; i++) f[i] = base(a[i] & 32767, a[i] >> 15);
     for(int i = 0; i < m; i++) g[i] = base(b[i] & 32767, b[i] >> 15);
     for(int i = n; i < sz; i++) f[i] = base(0, 0); 
     for(int i = m; i < sz; i++) g[i] = base(0, 0); 
-    calcrev(sz); 
+    prepare(sz); 
 
     fft(f, sz); fft(g, sz);
     for(int i = 0; i < sz; i++) {

@@ -11,6 +11,7 @@ void update(int node, int l, int r, int i, int j, ll v) {
 	if(r < i || l > j) return;
 	if(i <= l && r <= j) {
 		tree[node] += v; 
+		return; 
 	} int mid = l + r >> 1;
 	update(node << 1, l, mid, i, j, v);
 	update(node << 1|1, mid+1, r, i, j, v);
