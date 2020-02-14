@@ -1,6 +1,6 @@
 
 const int mod = 1e9 + 7;
-struct Mat{
+struct Mat {
     int a[10][10], d;
     Mat(int _d = 0) { 
         d = _d; 

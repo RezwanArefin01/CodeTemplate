@@ -77,30 +77,32 @@ void mul(int *a, int *b, int *c, int n, int m) {
     for(int i = 0; i < sz; ++i) c[i] = f[i].a / sz + 0.5; 
 }
 
-void mul_mod(int *a, int *b, int *c, int n, int m) {
+inline void mul_mod(int *a, int *b, int *c, int n, int m) {
     static base f[N], g[N], u[N], v[N];
-
     int sz = 1;
     while(sz < n + m - 1) sz <<= 1;
     for(int i = 0; i < n; i++) f[i] = base(a[i] & 32767, a[i] >> 15);
     for(int i = 0; i < m; i++) g[i] = base(b[i] & 32767, b[i] >> 15);
     for(int i = n; i < sz; i++) f[i] = base(0, 0); 
     for(int i = m; i < sz; i++) g[i] = base(0, 0); 
-    prepare(sz); 
 
-    fft(f, sz); fft(g, sz);
-    for(int i = 0; i < sz; i++) {
+    fft(f, sz), fft(g, sz);
+    for(int i = 0; i < sz; ++i) {
         int j = (sz - i) & (sz - 1);
-        base a1 = (f[i] + f[j].conj()) * base(0.5, 0);
-        base a0 = (f[i] - f[j].conj()) * base(0, -0.5);
-        base b1 = (g[i] + g[j].conj()) * base(0.5 / sz, 0);
-        base b0 = (g[i] - g[j].conj()) * base(0, -0.5 / sz);
-        u[j] = a1 * b1 + a0 * b0 * base(0, 1);
-        v[j] = a1 * b0 + a0 * b1;
+        static base da, db, dc, dd;
+        da = (f[i] + f[j].conj()) * base(0.5, 0);
+        db = (f[i] - f[j].conj()) * base(0, -0.5);
+        dc = (g[i] + g[j].conj()) * base(0.5, 0);
+        dd = (g[i] - g[j].conj()) * base(0, -0.5);
+        u[j] = da * dc + da * dd * base(0, 1); 
+        v[j] = db * dc + db * dd * base(0, 1);
     }
-    fft(u, sz); fft(v, sz);
-    for(int i = 0; i < sz; i++) {
-        ll aa = ll(u[i].a + 0.5) % mod, bb = ll(v[i].a + 0.5) % mod, cc = ll(u[i].b + 0.5) % mod; 
-        c[i] = ((aa + (bb << 15) % mod) % mod + (cc << 30) % mod) % mod;
+    fft(u, sz), fft(v, sz);
+    for(int i = 0; i < sz; ++i) {
+        int da = (ll)(u[i].a / sz + 0.5) % mod;
+        int db = (ll)(u[i].b / sz + 0.5) % mod;
+        int dc = (ll)(v[i].a / sz + 0.5) % mod;
+        int dd = (ll)(v[i].b / sz + 0.5) % mod;
+        c[i] = (da + ((ll)(db + dc) << 15) + ((ll)dd << 30)) % mod;
     }
 }
