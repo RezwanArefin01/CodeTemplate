@@ -1,10 +1,10 @@
 //BinaryLifting 
 //LCA Routine 
 //Dont forget to memset p[][] array with -1
-const int maxn = 1e5+10;
-const int MAXLOG = log2(maxn)+5;
-vector<int> adj[maxn];
-int p[maxn][MAXLOG], n, lg, L[maxn], timer = 0;
+const int N = 1e5+10;
+const int MAXLOG = log2(N)+5;
+vector<int> adj[N];
+int p[N][MAXLOG], n, lg, L[N], timer = 0;
 void dfs(int u, int par) {
 	p[u][0] = par; 
 	if(par + 1) 

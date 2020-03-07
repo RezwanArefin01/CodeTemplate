@@ -1,20 +1,34 @@
-const double eps = 1e-4;  
+double f(double x) { return x * x; }
 
-double f(double x) { return .5 * x; }
+double simpson(double a, double b, double eps,
+              double whole, double fa, double fb, 
+              double fm, int rec) {
+  double m   = (a + b)/2,  h   = (b - a)/2;
+  double lm  = (a + m)/2,  rm  = (m + b)/2;
+  // serious numerical trouble: it won't converge
+  if ((eps/2 == eps) || (a == lm)) { 
+    errno = EDOM; return whole; 
+  }
 
-double simpson(double a, double b) {
-	return (f(a) + 4 * f((a + b) / 2) + f(b)) * (b - a) / 6;
+  double flm = f(lm),      frm = f(rm);
+  double left  = (h/6) * (fa + 4*flm + fm);
+  double right = (h/6) * (fm + 4*frm + fb);
+  double delta = left + right - whole;
+
+  // depth limit too shallow
+  if (rec <= 0 && errno != EDOM) errno = ERANGE;
+
+  if (rec <= 0 || fabs(delta) <= 15*eps)
+    return left + right + (delta)/15;
+  return simpson(f,a,m,eps/2, left,fa,fm,flm,rec-1) +
+         simpson(f,m,b,eps/2,right,fm,fb,frm,rec-1);
 }
 
-double integrate(double l, double r, double e, double S) {
-	double m = (l + r) / 2; 
-	double left = simpson(l, m), right = simpson(m, r); 
-	double T = left + right;
-	if(fabs(T - S) <= 15 * e || r - l < 1e-10) 
-		return T + (T - S) / 15; 
-	return integrate(l, m, e / 2, left) + integrate(m, r, e / 2, right);
-}
-
-double integrate(double l, double r) { 
-	return integrate(l, r, eps, simpson(l, r)); 
+double integrate(double a, double b, double eps) {   
+  errno = 0;
+  double h = b - a;
+  if (h == 0) return 0;
+  double fa = f(a), fb = f(b), fm = f((a + b)/2);
+  double S = (h/6)*(fa + 4*fm + fb);
+  return simson(a, b, eps, S, fa, fb, fm, 20);
 }

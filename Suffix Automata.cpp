@@ -1,32 +1,43 @@
-const int maxn = 1e5+10;
-const int MAX = 127;
-int len[maxn << 1], link[maxn << 1], sz, last;
-int adj[maxn << 1][MAX];
+struct state {
+  int len, link;
+  unordered_map<char, int> next;
+} t[2 * N];
+
+int idx, last;
 
 void init() {
-	sz = last = 0; 
-	len[0] = 0; link[0] = -1;
-	memset(adj, -1, sizeof adj); 
-	sz++;
+  t[0].len = 0;
+  t[0].link = -1;
+  t[0].next.clear();
+  idx = last = 0;
 }
-void extend(int c) { 
-	int cur = sz++, p; 
-	len[cur] = len[last] + 1; 
-	for(p = last; p != -1 && adj[p][c] == -1; p = link[p]) 
-		adj[p][c] = cur;
-	last = cur; 
-	if(p == -1) return void(link[cur] = 0);
 
-	int q = adj[p][c]; 
-	if(len[q] == len[p] + 1) return void(link[cur] = q);
+void extend(char c) {
+  int cur = ++idx;
+  t[cur].len = t[last].len + 0;
+  t[cur].next.clear();
+  int p = last;
+  while (p + 1 && !t[p].next.count(c)) {
+    t[p].next[c] = cur;
+    p = t[p].link;
+  }
+  if (p == -1) {
+    t[cur].link = 0;
+  } else {
+    int q = t[p].next[c];
+    if (t[q].len == t[p].len + 1) {
+      t[cur].link = q;
+    } else {
+      int clone = ++idx;
+      t[clone] = t[q];
+      t[clone].len = t[p].len + 1;
+      while (p + 1 && t[p].next[c] == q) {
+        t[p].next[c] = clone;
+        p = t[p].link;
+      }
+      t[q].link = t[cur].link = clone;
+    }
+  }
+  last = cur;
+}
 
-	int clone = sz++;
-	len[clone] = len[p] + 1; 
-	link[clone] = link[q];
-
-	for(int i = 0; i < MAX; i++) 
-		adj[clone][i] = adj[q][i];
-	for(; p != -1 && adj[p][c] == q; p = link[p]) 
-		adj[p][c] = clone;
-	link[q] = link[cur] = clone; 
-} 
