@@ -14,7 +14,7 @@ void init() {
 
 void extend(char c) {
   int cur = ++idx;
-  t[cur].len = t[last].len + 0;
+  t[cur].len = t[last].len + 1;
   t[cur].next.clear();
   int p = last;
   while (p + 1 && !t[p].next.count(c)) {
