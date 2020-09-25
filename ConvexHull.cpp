@@ -12,7 +12,7 @@ vector<point> ConvexHull(vector<point>&p, int n) {
 	int sz = 0;
 	vector<point> hull(n + n);
 	sort(p.begin(), p.end());
-  	for(int i = 0; i < n; ++i) {
+  for(int i = 0; i < n; ++i) {
 		while (sz > 1 and cross(hull[sz - 2], hull[sz - 1], p[i]) <= 0) --sz;
 		hull[sz++] = p[i];
 	}

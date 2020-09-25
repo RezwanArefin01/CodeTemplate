@@ -4,21 +4,32 @@
  * make sure ta[], tb[] has 2n spaces to be used. 
  * in polysqrt(), if a[0] != 1 then discrete sqrt function is needed
 **********************************/
-int ta[N], tb[N], tc[N];
-void polyinv(int *a, int *b, int n) { 
-	if(n == 1) return void(b[0] = Pow(a[0], mod - 2)); 
-	polyinv(a, b, n >> 1); 
-	for(int i = 0; i < n; ++i) 
-		ta[i] = a[i], tb[i] = b[i]; 
-	for(int i = n; i < (n << 1); ++i) 
-		ta[i] = tb[i] = 0; 
-	n <<= 1; prepare(n); 
-	ntt(ta, n, 0), ntt(tb, n, 0); 
-	for(int i = 0; i < n; ++i)
-		b[i] = (ll) tb[i] * (2 + mod - (ll) ta[i] * tb[i] % mod) % mod; 
-	ntt(b, n, 1);
-	fill(b + (n >> 1), b + n, 0);
+
+void inverse(int *a, int *b, int n) {
+  static int x[N], y[N]; 
+  b[0] = Pow(a[0], mod - 2);  
+  int sz = 1; 
+  while(sz < n) {
+    sz <<= 1; 
+    memcpy(x, a, sz << 2); fft(x, sz); 
+    memcpy(y, b, sz << 2); fft(y, sz); 
+    for(int i = 0; i < sz; ++i) 
+      x[i] = (ll) x[i] * y[i] % mod;
+    reverse(x + 1, x + sz);  
+    fft(x, sz); 
+    for(int i = sz / 2; i < sz; ++i) 
+      x[i - sz / 2] = x[i], x[i] = 0; 
+    fft(x, sz); 
+    for(int i = 0; i < sz; ++i) 
+      x[i] = (ll) x[i] * (mod - y[i]) % mod; 
+    reverse(x + 1, x + sz); 
+    fft(x, sz); 
+    int inv_n2 = Pow(sz, mod - 3); 
+    for(int i = sz / 2; i < sz; ++i)  
+      b[i] = (ll) x[i - sz / 2] * inv_n2 % mod;
+  }
 }
+
 
 int inv2 = Pow(2, mod - 2); 
 void polysqrt(int *a, int *b, int n) {
@@ -47,14 +58,14 @@ int f[M], h[M], a[M], b[M];
 int fact[M], inv[M];
 
 void build(int n) {
-    if(n == 1) return void(f[0] = f[1] = 1); 
+  if(n == 1) return void(f[0] = f[1] = 1); 
 	if(n & 1) {
 		build(n - 1); 
-        for(int i = n; i >= 1; i--) {
-            f[i] = f[i - 1] + (ll) n * f[i] % mod; 
-            if(f[i] >= mod) f[i] -= mod; 
-        } f[0] = (ll) f[0] * n % mod; 
-        return; 
+      for(int i = n; i >= 1; i--) {
+        f[i] = f[i - 1] + (ll) n * f[i] % mod; 
+        if(f[i] >= mod) f[i] -= mod; 
+      } f[0] = (ll) f[0] * n % mod; 
+      return; 
 	} 
     n >>= 1; build(n); 
 	int t = n + n + 1, sz = 1; 
@@ -67,7 +78,7 @@ void build(int n) {
 		b[i] = (ll) p * inv[i] % mod; 
 		p = (ll) p * n % mod; 
 	}
-    for(int i = n + 1; i < sz; i++) a[i] = b[i] = 0; 
+  for(int i = n + 1; i < sz; i++) a[i] = b[i] = 0; 
 
 	ntt(a, sz); ntt(b, sz); 
 	for(int i = 0; i < sz; i++) 
@@ -86,23 +97,20 @@ void build(int n) {
 	ntt(f, sz, 1);
 }
 
-
-
-
 void polyinv(int *a, int *b, int n) {
-    static int c[N], d[N];
-    b[0] = Pow(a[0], mod - 2); 
-    int sz = 1;
+  static int c[N], d[N];
+  b[0] = Pow(a[0], mod - 2); 
+  int sz = 1;
 
-    while(sz < n) {
-        mul_mod(a, b, d, 2 * sz, 2 * sz); 
-        for(int i = sz; i < 2 * sz; ++i) 
-            d[i - sz] = d[i], d[i] = 0;
-        mul_mod(b, d, c, 2 * sz, 2 * sz); 
-        for(int i = sz; i < 2 * sz; ++i) {
-            b[i] -= c[i - sz];
-            if(b[i] < 0) b[i] += mod; 
-        }
-        sz <<= 1; 
+  while(sz < n) {
+    mul_mod(a, b, d, 2 * sz, 2 * sz); 
+    for(int i = sz; i < 2 * sz; ++i) 
+        d[i - sz] = d[i], d[i] = 0;
+    mul_mod(b, d, c, 2 * sz, 2 * sz); 
+    for(int i = sz; i < 2 * sz; ++i) {
+        b[i] -= c[i - sz];
+        if(b[i] < 0) b[i] += mod; 
     }
+    sz <<= 1; 
+  }
 }

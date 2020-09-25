@@ -27,6 +27,7 @@ void dfs(int u, int par = -1, int d = 0) {
 		dfs(v, u, d + 1);
 	out[u] = tym - 1;
 }
+
 void solve(int u) {
 	tym = 0; dfs(u);
 	unordered_map<int, int> cnt; cnt[0] = 1;
@@ -38,6 +39,7 @@ void solve(int u) {
 			++cnt[dist[vert[t]]];
 	}
 }
+
 void decomp(int u, int par = -1) {
 	calc(u, par);
 	int c = centroid(u, par, sub[u] / 2); 

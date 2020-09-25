@@ -1,12 +1,15 @@
-ll histro(vector<ll> &hist) {
-	stack<int> st; ll Max = 0;
-	for(int i = 0; i <= hist.size(); i++) { 
-		ll h = (i == n ? 0 : hist[i]);
-		if(st.empty() || h >= hist[st.top()]) 
-			st.push(i++);
-		else {
-			int tp = st.top(); st.pop();
-			Max = max(Max, hist[tp] * (st.empty() ? i : i - 1 - st.top()));
-		}
-	} return Max;
-} 
+int largestRectangleArea(vector<int>& h) {
+  h.push_back(0); 
+  int ret = 0; 
+  stack<int> st;
+  
+  for(int i = 0; i < h.size(); ++i) {
+    while(st.size() && h[st.top()] >= h[i]) {
+      int t = st.top(); st.pop(); 
+      ret = max(ret, h[t] * (st.size() ? i - st.top() - 1: i)); 
+    }
+    st.push(i);
+  }
+  
+  return ret;
+}
