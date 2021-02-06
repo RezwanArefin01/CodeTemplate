@@ -114,3 +114,17 @@ void polyinv(int *a, int *b, int n) {
     sz <<= 1; 
   }
 }
+
+// q_i = P(x^i), for i in [0..m-1]
+void chirpz(int *p, int *q, int n, int m, int x) {
+  static int a[N], b[N], c[N];
+  int t = n + m, s = max(n, m);
+  int xinv = Pow(x, mod - 2);
+  for (int i = 0; i < s; ++i) q[i] = Pow(xinv, (ll)i * (i - 1) / 2 % (mod - 1));
+  for (int i = 0; i < n; ++i) a[n - i - 1] = mul(p[i], q[i]);
+  for (int i = n; i < t; ++i) a[i] = 0;
+  for (int i = 0; i < t; ++i) b[i] = Pow(x, (ll)i * (i - 1) / 2 % (mod - 1));
+  mul(a, b, c, t, t);
+  for (int i = 0; i < m; ++i) q[i] = mul(q[i], c[n + i - 1]);
+}
+
