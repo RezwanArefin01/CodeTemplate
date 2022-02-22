@@ -1,48 +1,62 @@
-struct Dinic { // O(V^2 E)
-  static const int N = 10000; 
-  struct Edge { int v, cap, re; };
-  int n, s, t, L[N]; 
-  vector<Edge> E[N]; 
+template <int N, class T = int>
+class MaxFlow {
+ public:
+  struct Edge {
+    int u, v;
+    T cap, flow;
+    Edge(int u, int v, T cap, T flow) : u(u), v(v), cap(cap), flow(flow) {}
+  };
+  vector<int> adj[N];
+  vector<Edge> E;
+  int n, s, t, ptr[N], dist[N], Q[N];
 
-  void init(int _n, int _s, int _t) {
-    n = _n, s = _s, t = _t; 
-    for (int i = 0; i < n; ++i) E[i].clear(); 
+  inline void init(int _n, int _s, int _t) {
+    n = _n, s = _s, t = _t;
+    E.clear();
+    for (int i = 0; i < n; ++i) {
+      adj[i].clear();
+    }
   }
-  void addEdge(int u, int v, int f) {
-    E[u].push_back({v, f, (int)E[v].size()}); 
-    E[v].push_back({u, 0, (int)E[u].size() - 1}); 
+  inline void addEdge(int u, int v, T cap, bool directed = true) {
+    adj[u].push_back(E.size());
+    E.emplace_back(u, v, cap, 0);
+    adj[v].push_back(E.size());
+    E.emplace_back(v, u, directed ? 0 : cap, 0);
   }
-  bool bfs() {
-    for (int i = 0; i < n; ++i) L[i] = -1; 
-    queue<int> q({s}); 
-    L[s] = 0;
-    while(!q.empty()) {
-      int u = q.front(); q.pop(); 
-      for (auto &it : E[u]) {
-        if (it.cap > 0 && L[it.v] == -1) {
-          L[it.v] = L[u] + 1; 
-          q.push(it.v);
+  inline bool bfs() {
+    memset(dist, -1, sizeof(dist[0]) * n);
+    int f = 0, l = 0;
+    dist[s] = 0, Q[l++] = s;
+    while (f < l && dist[t] == -1) {
+      int u = Q[f++];
+      for (int i : adj[u]) {
+        if (dist[E[i].v] == -1 && E[i].flow < E[i].cap)
+          Q[l++] = E[i].v, dist[E[i].v] = dist[u] + 1;
+      }
+    }
+    return dist[t] != -1;
+  }
+  T dfs(int u, T pf) {
+    if (u == t || !pf) return pf;
+    while (ptr[u] < adj[u].size()) {
+      int i = adj[u][ptr[u]];
+      if (dist[E[i].v] == dist[u] + 1) {
+        if (T x = dfs(E[i].v, min(pf, E[i].cap - E[i].flow))) {
+          E[i].flow += x, E[i ^ 1].flow -= x;
+          return x;
         }
       }
+      ++ptr[u];
     }
-    return L[t] != -1;
+    return 0;
   }
-  int dfs(int u, int pf) {
-    if (u == t) return pf; 
-    int ret = 0; 
-    for (auto &it : E[u]) {
-      if (it.cap > 0 && L[it.v] == L[u] + 1) {
-        int tf = dfs(it.v, min(it.cap, pf));
-        ret += tf; pf -= tf; it.cap -= tf; 
-        E[it.v][it.re].cap += tf;
-        if (pf == 0) return ret;
-      }
+  T flow() {
+    T res = 0;
+    while (bfs()) {
+      memset(ptr, 0, n * sizeof(ptr[0]));
+      while (T f = dfs(s, numeric_limits<T>::max())) res += f;
     }
-    if (!ret) L[u] = -1; 
-    return ret; 
-  }
-  int flow(int ret = 0) {
-    while(bfs()) ret += dfs(s, INT_MAX); 
-    return ret; 
+    return res;
   }
 };
+
